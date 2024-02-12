@@ -30,3 +30,7 @@ ProductivityGuard is a Chrome extension designed to help you stay focused and pr
 Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
 
 ## Demo
+
+
+https://github.com/Preetiraj3697/ProductivityGuard/assets/107460745/bb5aa5a5-66a9-4e2f-9f10-3db81ecae260
+
