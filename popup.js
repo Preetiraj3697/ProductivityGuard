@@ -63,44 +63,38 @@ document.getElementById("btn").addEventListener("click", () => {
         ) {
           ShowError("This URL is Blocked completely");
         } else {
-          chrome.storage.local.set({
-            BlockedUrl: [
-              ...data.BlockedUrl,
-              { status: "In_Progress", url: WebsiteHostName },
-            ],
-          });
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          let updatedBlockedUrl = data.BlockedUrl.concat({ status: "In_Progress", url: WebsiteHostName });
+                chrome.storage.local.set({ BlockedUrl: updatedBlockedUrl });
+                setupBlockingTimer(WebsiteHostName);
+        }
+      }
+      function setupBlockingTimer(url) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, {
-              from: "popup",
-              subject: "startTimer",
+                from: "popup",
+                subject: "startTimer",
             });
             setTimeout(() => {
-              chrome.storge.local.get("BlockedUrl", (data) => {
-                data.BlockedUrl.forEach((e, index) => {
-                  if (e.url === WebsiteHostName && e.status === "In_Progress") {
-                    var arr = data.BlockedUrl.splice(index, 1);
-
-                    var then = new Date();
-                    then.setHours(24, 0, 0, 0);
-                    const blockTill = then.getTime();
-
-                    chrome.storage.local.set({
-                      BlockedUrl: [
-                        ...arr,
-                        {
-                          status: "BLOCKED",
-                          url: WebsiteHostName,
-                          BlockTill: blockTill,
-                        },
-                      ],
+                chrome.storage.local.get("BlockedUrl", (data) => {
+                    data.BlockedUrl.forEach((e, index) => {
+                        if (e.url === url && e.status === "In_Progress") {
+                            var arr = data.BlockedUrl.slice();
+                            arr[index].status = "BLOCKED";
+      
+                            var then = new Date();
+                            then.setHours(24, 0, 0, 0);
+                            const blockTill = then.getTime();
+      
+                            arr[index].BlockTill = blockTill;
+      
+                            chrome.storage.local.set({ BlockedUrl: arr });
+                        }
                     });
-                  }
                 });
-              });
             }, 5000);
-          });
-        }
+        });
       }
     });
   }
 });
+
